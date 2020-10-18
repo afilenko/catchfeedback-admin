@@ -1,0 +1,22 @@
+button,
+a {
+  &.greenButton {
+    background-color: #6d9e4a;
+    color: #fff;
+
+    &:active,
+    &:hover {
+      background-color: #6d9e4a;
+    }
+  }
+
+  &.redButton {
+    background-color: #e57373;
+    color: #fff;
+
+    &:active,
+    &:hover {
+      background-color: #e57373;
+    }
+  }
+}

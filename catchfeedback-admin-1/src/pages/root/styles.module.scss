@@ -1,0 +1,54 @@
+.container {
+  display: flex;
+  height: 100%;
+}
+
+.header {
+  position: absolute;
+  display: flex;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 0 20px;
+  justify-content: space-between;
+  background: #373b44;
+  box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.15);
+  color: #fff;
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding-top: 50px;
+}
+
+.logo {
+  height: 50px;
+}
+
+.authUserControls {
+  display: flex;
+  align-items: center;
+}
+
+.loadingIndicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -25px;
+  margin-left: -25px;
+}
+
+.authButton {
+  color: #fff;
+  cursor: pointer;
+  margin-left: 20px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

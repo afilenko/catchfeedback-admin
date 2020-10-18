@@ -1,0 +1,41 @@
+.container {
+  position: relative;
+  height: 100%;
+  color: #2f2f2f;
+
+  .error {
+    position: absolute;
+    bottom: 0;
+    transform: translateY(100%);
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed #8a8b8e;
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+}
+
+.content {
+  position: absolute;
+  top: 80px;
+  right: -10px;
+  bottom: 0;
+  left: 0;
+  overflow: scroll;
+  padding-bottom: 20px;
+}
+
+.formButtons {
+  > *:not(:last-child) {
+    margin-right: 20px;
+  }
+}
+
+.title {
+  font-size: 24px;
+  color: #2f2f2f;
+}

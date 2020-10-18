@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 60.1 (88133) - https://sketch.com -->
+    <title>Icon Add Audio</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Sharing-Without-Gift-Custom-Filled" transform="translate(-201.000000, -409.000000)">
+            <g id="Card" transform="translate(0.000000, 110.000000)">
+                <g id="Add-Audio" transform="translate(201.000000, 299.000000)">
+                    <g id="Icon-Add-Audio">
+                        <circle id="Mask" fill="#B0BBC5" cx="20" cy="20" r="20"></circle>
+                        <g id="Group-7" transform="translate(12.870303, 8.800000)">
+                            <path d="M13.5965297,9.48030403 L13.5965297,11.6539984 C13.5965297,15.4084173 10.553199,18.4517479 6.79878011,18.4517479 C3.04356849,18.4517479 0.000237822142,15.4084173 0.000237822142,11.6539984 L0.000237822142,9.48030403" id="Stroke-1" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+                            <path d="M6.79862156,-7.92740472e-05 C4.52345641,-7.92740472e-05 2.67874933,1.8446278 2.67874933,4.11979296 L2.67874933,11.5517349 C2.67874933,13.8269 4.52345641,15.6716071 6.79862156,15.6716071 C9.07378672,15.6716071 10.9177011,13.8269 10.9177011,11.5517349 L10.9177011,4.11979296 C10.9177011,1.8446278 9.07378672,-7.92740472e-05 6.79862156,-7.92740472e-05" id="Fill-3" fill="#FFFFFF"></path>
+                            <line x1="6.79862156" y1="18.452065" x2="6.79862156" y2="22.2445355" id="Stroke-5" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></line>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
