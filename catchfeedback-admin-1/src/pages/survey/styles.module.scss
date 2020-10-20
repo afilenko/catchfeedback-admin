@@ -42,14 +42,30 @@
     margin-top: 20px;
     margin-bottom: 30px;
   }
+
+  .contactSectionTitlesInput {
+    margin-bottom: 30px;
+  }
 }
 
 .inputsColumn {
   width: 320px;
+  padding-left: 5px;
 }
 
 .formLabel {
   margin-bottom: 10px;
   color: #5f5f5f;
   font-size: 12px;
+}
+.sectionTitle {
+}
+
+.emojiPreview {
+  display: flex;
+}
+
+.emojiUpload,
+.evaluationMark {
+  margin-right: 20px;
 }

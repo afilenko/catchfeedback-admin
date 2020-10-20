@@ -9,6 +9,19 @@
   font-family: "Montserrat", sans-serif;
   overflow: auto;
 
+  .thumb {
+    width: 40px;
+    height: 40px;
+    margin-top: -20px;
+    margin-left: -20px;
+
+    &:hover,
+    &:active,
+    .focusVisible {
+      box-shadow: none !important;
+    }
+  }
+
   .submitButton {
     display: block;
     width: 275px;
@@ -89,4 +102,30 @@
 .submitButtonWrapper {
   display: flex;
   justify-content: center;
+}
+
+.emojiRow,
+.evaluationMarksRow {
+  display: flex;
+  justify-content: space-between;
+}
+
+.evaluationSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 26px 17px;
+  border-radius: 20px;
+}
+
+.evaluationTopic {
+  margin: 14px 0 24px 0;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.slider {
+  color: #ffa188;
 }

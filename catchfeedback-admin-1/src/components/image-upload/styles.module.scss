@@ -7,7 +7,7 @@
   margin-bottom: 10px;
 }
 
-.imagePreview {
+.imagePreviewWparrer {
   width: 320px;
   height: 200px;
 
@@ -16,10 +16,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
   position: relative;
+}
+
+.imagePreview {
+  max-width: 320px;
+  max-height: 200px;
 }
 
 .hasImage {
@@ -50,4 +54,8 @@
 
 .uploadProgressHidden {
   opacity: 0;
+}
+
+.placeholderText {
+  text-align: center;
 }

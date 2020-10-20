@@ -42,9 +42,14 @@ export type Survey = ProjectSubEntity & {
   responseTextGrade5?: string;
   recommendationQuestionText?: string;
   submitButtonText?: string;
-  questions?: string[];
+  evaluationLabel?: string;
+  evaluationTopics?: string[];
   sharingQuestions?: string[];
-  contactSectionTitle?: string;
+  contactSectionTitles?: string[];
+  gradeEmoji: string[];
+  gradeEmojiSelected: string[];
+  evaluationMark?: string;
+  evaluationMarkSelected?: string;
   feedbackInputLabel?: string;
   emailInputLabel?: string;
   phoneInputLabel?: string;

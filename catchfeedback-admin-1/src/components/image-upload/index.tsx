@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { LinearProgress } from "@material-ui/core";
 import classNames from "classnames";
 
@@ -12,7 +12,10 @@ type Props = {
   imagePath: string;
   imageName: string;
   onComplete: (url: string) => void;
+  width?: number;
+  height?: number;
   backgroundSize?: string;
+  className?: string;
 };
 
 export default ({
@@ -21,14 +24,22 @@ export default ({
   imagePath,
   imageName,
   onComplete,
+  width,
+  height,
   backgroundSize = "cover",
+  className,
 }: Props) => {
   const [progress, setProgress] = useState(0);
 
   const handleImageUpload = (event: any) => {
-    const media = event.target.files[0];
-    const newImage = new File([media], imageName);
-    const imageFullPath = `${imagePath}/${imageName}`;
+    const imageFile = event.target.files[0];
+    console.log(">>>>", { imageFile });
+    const fileName = imageFile.name;
+    const fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
+    console.log(">>>> fileExtension", fileExtension);
+
+    const newImage = new File([imageFile], imageName);
+    const imageFullPath = `${imagePath}/${imageName}.${fileExtension}`;
     const uploadTask = firebaseStorage.ref().child(imageFullPath).put(newImage);
 
     uploadTask.on(
@@ -48,21 +59,41 @@ export default ({
     );
   };
 
+  const imagePreviewStyle = useMemo(() => {
+    const baseStyle = {
+      width,
+      height,
+      backgroundSize,
+    };
+
+    return image
+      ? {
+          ...baseStyle,
+          backgroundImage: `url(${image})`,
+        }
+      : baseStyle;
+  }, [backgroundSize, height, image, width]);
+
   return (
-    <div className={styles.container}>
+    <div className={classNames(styles.container, className)}>
       <div className={styles.label}>{label}</div>
       <div
-        className={classNames(styles.imagePreview, {
+        className={classNames(styles.imagePreviewWparrer, {
           [styles.hasImage]: !!image,
         })}
-        style={
-          image ? { backgroundImage: `url(${image})`, backgroundSize } : {}
-        }
+        style={imagePreviewStyle}
       >
+        {/* eslint-disable-next-line jsx-a11y/alt-text */}
         <label className={styles.fileUploadLabel}>
-          <input type="file" accept="image/*" onChange={handleImageUpload} />
+          <input
+            type="file"
+            accept="image/png, image/jpeg"
+            onChange={handleImageUpload}
+          />
         </label>
-        {!image ? "Click to upload" : ""}
+        {!image ? (
+          <span className={styles.placeholderText}>Click to upload</span>
+        ) : null}
       </div>
 
       <LinearProgress

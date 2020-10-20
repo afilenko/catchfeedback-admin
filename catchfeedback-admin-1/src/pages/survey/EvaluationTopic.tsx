@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { IconButton, TextField, Menu, MenuItem } from "@material-ui/core";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 
-import styles from "./SurveyQuestion.module.scss";
+import styles from "./EvaluationTopic.module.scss";
 
 type Props = {
   value: string;
@@ -30,7 +30,7 @@ export default ({
   return (
     <div className={styles.container}>
       <TextField
-        label="Question"
+        label="Topic"
         value={value || ""}
         onChange={({ target }) => onChangeText(target.value, index)}
         fullWidth={true}
