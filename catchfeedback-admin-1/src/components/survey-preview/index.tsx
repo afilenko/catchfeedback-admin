@@ -1,32 +1,34 @@
-import React, { useMemo, useState } from "react";
-import { TextField, Button, Slider, Tooltip } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
-import classNames from "classnames";
+import React, { useMemo, useState } from "react"
+import { TextField, Button, Slider, Tooltip } from "@material-ui/core"
+import { withStyles } from "@material-ui/core/styles"
+// @ts-ignore
+import { Scrollbars } from "react-custom-scrollbars"
+import classNames from "classnames"
 
-import { Survey } from "typings/entities";
-import { ReactComponent as PhotoIcon } from "assets/icons/photo.svg";
-import { ReactComponent as AudioIcon } from "assets/icons/audio.svg";
-import IconToggle from "./IconToggle";
+import { Survey } from "typings/entities"
+import { ReactComponent as PhotoIcon } from "assets/icons/photo.svg"
+import { ReactComponent as AudioIcon } from "assets/icons/audio.svg"
+import IconToggle from "./IconToggle"
 
-import styles from "./styles.module.scss";
+import styles from "./styles.module.scss"
 
 type Props = {
-  data?: Survey;
-  grade?: number;
-};
+  data?: Survey
+  grade?: number
+}
 
 const DEFAULT_DESIGN = {
   contentBackgroundColor: "#ffffff",
   submitButtonBackgroundColor: "#ffa188",
   submitButtonTextColor: "#ffffff",
   evaluationSectionBackgroundColor: "#f3f6fa",
-};
+}
 
 const ValueLabelComponent = ({ children, open, value }: any) => (
   <Tooltip open={open} enterTouchDelay={0} placement="top" title={value}>
     {children}
   </Tooltip>
-);
+)
 
 const StyledSlider = withStyles({
   root: {
@@ -48,11 +50,11 @@ const StyledSlider = withStyles({
     left: 4,
   },
   markLabel: {
-    marginTop: 2,
+    marginTop: 4,
     fontSize: 18,
     color: "#757575",
   },
-})(Slider);
+})(Slider)
 
 export default ({
   data = { gradeEmoji: [], gradeEmojiSelected: [] },
@@ -77,49 +79,52 @@ export default ({
     evaluationMark,
     evaluationMarkSelected,
     design,
-  } = data;
+  } = data
 
   const surveyDesign: typeof design = useMemo(
     () => ({ ...DEFAULT_DESIGN, ...design }),
     [design]
-  );
+  )
 
   const headerStyles = useMemo(() => {
-    const { headerBackgroundImage, headerBackgroundColor } = surveyDesign;
+    const { headerBackgroundImage, headerBackgroundColor } = surveyDesign
 
     return {
       backgroundImage: `url(${headerBackgroundImage})`,
       backgroundColor: headerBackgroundColor,
-    };
-  }, [surveyDesign]);
+    }
+  }, [surveyDesign])
 
   const contentStyles = useMemo(() => {
-    const { contentBackgroundColor } = surveyDesign;
+    const { contentBackgroundColor } = surveyDesign
 
     return {
       backgroundColor: contentBackgroundColor,
-    };
-  }, [surveyDesign]);
+    }
+  }, [surveyDesign])
 
   const evaluationSectionStyle = useMemo(() => {
-    const { evaluationSectionBackgroundColor } = surveyDesign;
+    const { evaluationSectionBackgroundColor } = surveyDesign
 
-    return { backgroundColor: evaluationSectionBackgroundColor };
-  }, [surveyDesign]);
+    return { backgroundColor: evaluationSectionBackgroundColor }
+  }, [surveyDesign])
 
   const submitButtonStyles = useMemo(() => {
-    const { submitButtonBackgroundColor, submitButtonTextColor } = surveyDesign;
+    const { submitButtonBackgroundColor, submitButtonTextColor } = surveyDesign
 
     return {
       backgroundColor: submitButtonBackgroundColor,
       color: submitButtonTextColor,
-    };
-  }, [surveyDesign]);
+    }
+  }, [surveyDesign])
 
-  const [evaluation, setEvaluation] = useState<Record<string, number>>({});
+  const [evaluation, setEvaluation] = useState<Record<string, number>>({})
 
   return (
-    <div className={styles.container}>
+    <Scrollbars
+      className={styles.container}
+      style={{ width: 320, height: 570 }}
+    >
       <div className={styles.header} style={headerStyles}>
         {logo ? (
           <img className={styles.logo} src={logo} alt={title} />
@@ -211,6 +216,6 @@ export default ({
           </Button>
         </div>
       </div>
-    </div>
-  );
-};
+    </Scrollbars>
+  )
+}
