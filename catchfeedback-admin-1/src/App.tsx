@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react'
 
-import AuthPage from "pages/auth";
+import AuthPage from 'pages/auth'
 
 function App() {
-  return <AuthPage />;
+  return <AuthPage />
 }
 
-export default App;
+export default App

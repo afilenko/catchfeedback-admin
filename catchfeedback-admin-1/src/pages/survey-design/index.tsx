@@ -1,27 +1,24 @@
-import React, { useMemo, useEffect, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { useParams } from "react-router-dom"
-import { useFormik } from "formik"
-import { object, string } from "yup"
-// @ts-ignore
-import { ChromePicker } from "react-color"
+import React, { useMemo, useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
+import { useFormik } from 'formik'
+import { object, string } from 'yup'
 
-import {
-  surveysSelector,
-  isPendingSurveysSelector,
-} from "store/surveys/selectors"
-import { fetchSurvey, updateSurvey, deleteSurvey } from "store/surveys/actions"
-import SubEntityTitle from "components/sub-entity-title"
-import ImageUpload from "components/image-upload"
-import CustomButton from "components/custom-button"
-import Form from "components/form"
-import useProject from "hooks/useProject"
-import SurveyPreview from "components/survey-preview"
+import { surveysSelector, isPendingSurveysSelector } from 'store/surveys/selectors'
+import { fetchSurvey, updateSurvey, deleteSurvey } from 'store/surveys/actions'
 
-import styles from "./styles.module.scss"
+import SubEntityTitle from 'components/sub-entity-title'
+import ImageUpload from 'components/image-upload'
+import CustomButton from 'components/custom-button'
+import Form from 'components/form'
+import ColorPicker from 'components/color-piicker'
+import useProject from 'hooks/useProject'
+import SurveyPreview from 'components/survey-preview'
+
+import styles from './styles.module.scss'
 
 const VALIDATION_SCHEMA = object({
-  title: string().required("This field is required"),
+  title: string().required('This field is required'),
 })
 
 const INITIAL_VALUES = {}
@@ -32,7 +29,6 @@ export default () => {
   const surveys = useSelector(surveysSelector)
   const pending = useSelector(isPendingSurveysSelector)
   const project = useProject()
-  const [themeColor, setThemeColor] = useState("#ffa188")
 
   useEffect(() => {
     dispatch(fetchSurvey(projectId))
@@ -57,22 +53,16 @@ export default () => {
     onSubmit: handleSave,
   })
 
-  console.log({ themeColor })
-
   return (
     <Form
-      title={
-        <SubEntityTitle title={survey?.title} projectTitle={project?.title} />
-      }
+      title={<SubEntityTitle title={survey?.title} projectTitle={project?.title} />}
       onDelete={handleDelete}
       onSubmit={formik.handleSubmit}
       onCancel={formik.resetForm}
       isUpdateDisabled={!formik.dirty || pending}
       className={styles.container}
       additionalControls={
-        <CustomButton href={`/#/projects/${projectId}`}>
-          Go to Project
-        </CustomButton>
+        <CustomButton href={`/#/projects/${projectId}`}>Go to Project</CustomButton>
       }
     >
       <div className={styles.surveyPageLayout}>
@@ -87,14 +77,16 @@ export default () => {
                 updateSurvey({
                   design: { ...survey?.design, headerBackgroundImage: url },
                   id: surveyId,
-                })
+                }),
               )
             }
           />
-          <ChromePicker
-            color={themeColor}
-            onChange={({ hex }: { hex: string }) => setThemeColor(hex)}
-            disableAlpha={true}
+          <ColorPicker
+            onChange={(color: string) => formik.setFieldValue('headerBackgroundColor', color)}
+          />
+          <ColorPicker
+            defaultColor="#000000"
+            onChange={(color: string) => formik.setFieldValue('headerTextColor', color)}
           />
         </div>
         <SurveyPreview data={survey} />
@@ -102,3 +94,5 @@ export default () => {
     </Form>
   )
 }
+
+// #ffa188

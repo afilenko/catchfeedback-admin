@@ -1,5 +1,5 @@
-import React from "react";
+import React from 'react'
 
-import styles from "./styles.module.scss";
+import styles from './styles.module.scss'
 
-export default () => <div className={styles.container}>Page not found</div>;
+export default () => <div className={styles.container}>Page not found</div>

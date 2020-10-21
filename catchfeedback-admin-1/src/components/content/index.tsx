@@ -1,14 +1,14 @@
-import React from "react";
-import { Switch, Route } from "react-router-dom";
+import React from 'react'
+import { Switch, Route } from 'react-router-dom'
 
-import NotFoundPage from "pages/not-found";
-import { ROUTES } from "helpers/config";
-import ProjectPage from "pages/project";
-import PromoPage from "pages/promo";
-import SurveyPage from "pages/survey";
-import SurveyDesignPage from "pages/survey-design";
+import NotFoundPage from 'pages/not-found'
+import { ROUTES } from 'helpers/config'
+import ProjectPage from 'pages/project'
+import PromoPage from 'pages/promo'
+import SurveyPage from 'pages/survey'
+import SurveyDesignPage from 'pages/survey-design'
 
-import styles from "./styles.module.scss";
+import styles from './styles.module.scss'
 
 export default () => {
   return (
@@ -17,9 +17,7 @@ export default () => {
         <Route path={`${ROUTES.PROJECTS}/:projectId/promotions/:promoId?`}>
           <PromoPage />
         </Route>
-        <Route
-          path={`${ROUTES.PROJECTS}/:projectId/surveys/:surveyId?/content`}
-        >
+        <Route path={`${ROUTES.PROJECTS}/:projectId/surveys/:surveyId?/content`}>
           <SurveyPage />
         </Route>
         <Route path={`${ROUTES.PROJECTS}/:projectId/surveys/:surveyId?/design`}>
@@ -34,5 +32,5 @@ export default () => {
         <Route path="*" exact={true} component={NotFoundPage} />
       </Switch>
     </div>
-  );
-};
+  )
+}

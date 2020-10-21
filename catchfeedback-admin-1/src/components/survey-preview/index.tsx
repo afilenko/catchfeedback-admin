@@ -1,16 +1,16 @@
-import React, { useMemo, useState } from "react"
-import { TextField, Button, Slider, Tooltip } from "@material-ui/core"
-import { withStyles } from "@material-ui/core/styles"
+import React, { useMemo, useState } from 'react'
+import { TextField, Button, Slider, Tooltip } from '@material-ui/core'
+import { withStyles } from '@material-ui/core/styles'
 // @ts-ignore
-import { Scrollbars } from "react-custom-scrollbars"
-import classNames from "classnames"
+import { Scrollbars } from 'react-custom-scrollbars'
+import classNames from 'classnames'
 
-import { Survey } from "typings/entities"
-import { ReactComponent as PhotoIcon } from "assets/icons/photo.svg"
-import { ReactComponent as AudioIcon } from "assets/icons/audio.svg"
-import IconToggle from "./IconToggle"
+import { Survey } from 'typings/entities'
+import { ReactComponent as PhotoIcon } from 'assets/icons/photo.svg'
+import { ReactComponent as AudioIcon } from 'assets/icons/audio.svg'
+import IconToggle from './IconToggle'
 
-import styles from "./styles.module.scss"
+import styles from './styles.module.scss'
 
 type Props = {
   data?: Survey
@@ -18,10 +18,10 @@ type Props = {
 }
 
 const DEFAULT_DESIGN = {
-  contentBackgroundColor: "#ffffff",
-  submitButtonBackgroundColor: "#ffa188",
-  submitButtonTextColor: "#ffffff",
-  evaluationSectionBackgroundColor: "#f3f6fa",
+  contentBackgroundColor: '#ffffff',
+  submitButtonBackgroundColor: '#ffa188',
+  submitButtonTextColor: '#ffffff',
+  evaluationSectionBackgroundColor: '#f3f6fa',
 }
 
 const ValueLabelComponent = ({ children, open, value }: any) => (
@@ -32,7 +32,7 @@ const ValueLabelComponent = ({ children, open, value }: any) => (
 
 const StyledSlider = withStyles({
   root: {
-    color: "#ffa188",
+    color: '#ffa188',
     marginTop: 30,
     marginBottom: 30,
   },
@@ -41,8 +41,8 @@ const StyledSlider = withStyles({
     width: 40,
     marginTop: -20,
     marginLeft: -20,
-    "&:focus, &:hover, &$active": {
-      boxShadow: "none",
+    '&:focus, &:hover, &$active': {
+      boxShadow: 'none',
     },
   },
   active: {},
@@ -52,14 +52,11 @@ const StyledSlider = withStyles({
   markLabel: {
     marginTop: 4,
     fontSize: 18,
-    color: "#757575",
+    color: '#757575',
   },
 })(Slider)
 
-export default ({
-  data = { gradeEmoji: [], gradeEmojiSelected: [] },
-  grade = 5,
-}: Props) => {
+export default ({ data = { gradeEmoji: [], gradeEmojiSelected: [] }, grade = 5 }: Props) => {
   const {
     logo,
     title,
@@ -81,10 +78,7 @@ export default ({
     design,
   } = data
 
-  const surveyDesign: typeof design = useMemo(
-    () => ({ ...DEFAULT_DESIGN, ...design }),
-    [design]
-  )
+  const surveyDesign: typeof design = useMemo(() => ({ ...DEFAULT_DESIGN, ...design }), [design])
 
   const headerStyles = useMemo(() => {
     const { headerBackgroundImage, headerBackgroundColor } = surveyDesign
@@ -121,10 +115,7 @@ export default ({
   const [evaluation, setEvaluation] = useState<Record<string, number>>({})
 
   return (
-    <Scrollbars
-      className={styles.container}
-      style={{ width: 320, height: 570 }}
-    >
+    <Scrollbars className={styles.container} style={{ width: 320, height: 570 }}>
       <div className={styles.header} style={headerStyles}>
         {logo ? (
           <img className={styles.logo} src={logo} alt={title} />
@@ -148,9 +139,7 @@ export default ({
           ))}
         </div>
 
-        <div className={styles.sectionTitle}>
-          {sharingQuestions ? sharingQuestions[grade] : ""}
-        </div>
+        <div className={styles.sectionTitle}>{sharingQuestions ? sharingQuestions[grade] : ''}</div>
         <TextField multiline fullWidth={true} label={feedbackInputLabel} />
         <div className={styles.uploadControlsWrapper}>
           <span className={styles.uploadControl}>
@@ -163,16 +152,13 @@ export default ({
           </span>
         </div>
         <div className={styles.sectionTitle}>
-          {contactSectionTitles ? contactSectionTitles[grade] : ""}
+          {contactSectionTitles ? contactSectionTitles[grade] : ''}
         </div>
         <TextField fullWidth={true} label={emailInputLabel} />
         <TextField fullWidth={true} label={phoneInputLabel} />
         <div className={styles.sectionTitle}>{evaluationLabel}</div>
         {evaluationTopics?.map((evaluationTopic) => (
-          <div
-            className={styles.evaluationSection}
-            style={evaluationSectionStyle}
-          >
+          <div className={styles.evaluationSection} style={evaluationSectionStyle}>
             <div className={styles.evaluationTopic}>{evaluationTopic}</div>
             <div className={styles.evaluationMarksRow}>
               {[1, 2, 3, 4, 5].map((evaluationGrade) => (
@@ -201,11 +187,11 @@ export default ({
           marks={[
             {
               value: 0,
-              label: "0",
+              label: '0',
             },
             {
               value: 10,
-              label: "10",
+              label: '10',
             },
           ]}
           valueLabelDisplay="on"

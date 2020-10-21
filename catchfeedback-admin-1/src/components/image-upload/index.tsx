@@ -1,22 +1,22 @@
-import React, { useState, useMemo } from "react";
-import { LinearProgress } from "@material-ui/core";
-import classNames from "classnames";
+import React, { useState, useMemo } from 'react'
+import { LinearProgress } from '@material-ui/core'
+import classNames from 'classnames'
 
-import { firebaseStorage } from "helpers/firebase";
+import { firebaseStorage } from 'helpers/firebase'
 
-import styles from "./styles.module.scss";
+import styles from './styles.module.scss'
 
 type Props = {
-  label?: string;
-  image?: string;
-  imagePath: string;
-  imageName: string;
-  onComplete: (url: string) => void;
-  width?: number;
-  height?: number;
-  backgroundSize?: string;
-  className?: string;
-};
+  label?: string
+  image?: string
+  imagePath: string
+  imageName: string
+  onComplete: (url: string) => void
+  width?: number
+  height?: number
+  backgroundSize?: string
+  className?: string
+}
 
 export default ({
   label,
@@ -26,53 +26,50 @@ export default ({
   onComplete,
   width,
   height,
-  backgroundSize = "cover",
+  backgroundSize = 'cover',
   className,
 }: Props) => {
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(0)
 
   const handleImageUpload = (event: any) => {
-    const imageFile = event.target.files[0];
-    console.log(">>>>", { imageFile });
-    const fileName = imageFile.name;
-    const fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
-    console.log(">>>> fileExtension", fileExtension);
+    const imageFile = event.target.files[0]
+    console.log('>>>>', { imageFile })
+    const fileName = imageFile.name
+    const fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1)
+    console.log('>>>> fileExtension', fileExtension)
 
-    const newImage = new File([imageFile], imageName);
-    const imageFullPath = `${imagePath}/${imageName}.${fileExtension}`;
-    const uploadTask = firebaseStorage.ref().child(imageFullPath).put(newImage);
+    const newImage = new File([imageFile], imageName)
+    const imageFullPath = `${imagePath}/${imageName}.${fileExtension}`
+    const uploadTask = firebaseStorage.ref().child(imageFullPath).put(newImage)
 
     uploadTask.on(
-      "state_changed",
+      'state_changed',
       ({ bytesTransferred, totalBytes }) => {
-        setProgress((bytesTransferred / totalBytes) * 100);
+        setProgress((bytesTransferred / totalBytes) * 100)
       },
       console.error,
       async () => {
-        const url = await firebaseStorage
-          .ref()
-          .child(imageFullPath)
-          .getDownloadURL();
+        const url = await firebaseStorage.ref().child(imageFullPath).getDownloadURL()
 
-        onComplete(url);
-      }
-    );
-  };
+        onComplete(url)
+      },
+    )
+  }
 
   const imagePreviewStyle = useMemo(() => {
     const baseStyle = {
       width,
       height,
       backgroundSize,
-    };
+    }
 
     return image
       ? {
           ...baseStyle,
           backgroundImage: `url(${image})`,
         }
-      : baseStyle;
-  }, [backgroundSize, height, image, width]);
+      : baseStyle
+  }, [backgroundSize, height, image, width])
 
   return (
     <div className={classNames(styles.container, className)}>
@@ -85,15 +82,9 @@ export default ({
       >
         {/* eslint-disable-next-line jsx-a11y/alt-text */}
         <label className={styles.fileUploadLabel}>
-          <input
-            type="file"
-            accept="image/png, image/jpeg"
-            onChange={handleImageUpload}
-          />
+          <input type="file" accept="image/png, image/jpeg" onChange={handleImageUpload} />
         </label>
-        {!image ? (
-          <span className={styles.placeholderText}>Click to upload</span>
-        ) : null}
+        {!image ? <span className={styles.placeholderText}>Click to upload</span> : null}
       </div>
 
       <LinearProgress
@@ -104,5 +95,5 @@ export default ({
         value={progress}
       />
     </div>
-  );
-};
+  )
+}

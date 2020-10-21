@@ -1,25 +1,18 @@
 /* eslint-disable jsx-a11y/alt-text */
-import React from "react";
+import React from 'react'
 
-import styles from "./IconToggle.module.scss";
+import styles from './IconToggle.module.scss'
 
 type Props = {
-  width: number;
-  height: number;
-  normalStateURL?: string;
-  selectedStateURL?: string;
-  selected?: boolean;
-  onClick?: () => void;
-};
+  width: number
+  height: number
+  normalStateURL?: string
+  selectedStateURL?: string
+  selected?: boolean
+  onClick?: () => void
+}
 
-export default ({
-  width,
-  height,
-  normalStateURL,
-  selectedStateURL,
-  selected,
-  onClick,
-}: Props) => {
+export default ({ width, height, normalStateURL, selectedStateURL, selected, onClick }: Props) => {
   return (
     <div
       className={styles.container}
@@ -33,16 +26,16 @@ export default ({
         key={normalStateURL}
         src={normalStateURL}
         style={{
-          visibility: !selected ? "visible" : "hidden",
+          visibility: !selected ? 'visible' : 'hidden',
         }}
       />
       <img
         key={selectedStateURL}
         src={selectedStateURL}
         style={{
-          visibility: selected ? "visible" : "hidden",
+          visibility: selected ? 'visible' : 'hidden',
         }}
       />
     </div>
-  );
-};
+  )
+}

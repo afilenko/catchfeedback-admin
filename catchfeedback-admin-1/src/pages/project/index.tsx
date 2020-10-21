@@ -1,65 +1,56 @@
-import React, { useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { useFormik } from "formik";
-import { object, string } from "yup";
+import React, { useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
+import { useFormik } from 'formik'
+import { object, string } from 'yup'
 
-import {
-  projectsSelector,
-  isPendingProjectsSelector,
-} from "store/projects/selectors";
-import {
-  createProject,
-  updateProject,
-  deleteProject,
-} from "store/projects/actions";
-import FormInput from "components/form-input";
-import CustomButton from "components/custom-button";
-import Form from "components/form";
+import { projectsSelector, isPendingProjectsSelector } from 'store/projects/selectors'
+import { createProject, updateProject, deleteProject } from 'store/projects/actions'
+import FormInput from 'components/form-input'
+import CustomButton from 'components/custom-button'
+import Form from 'components/form'
 
-import styles from "./styles.module.scss";
-import { ROUTES } from "helpers/config";
+import styles from './styles.module.scss'
+import { ROUTES } from 'helpers/config'
 
 const VALIDATION_SCHEMA = object({
-  title: string().required("This field is required"),
-});
+  title: string().required('This field is required'),
+})
 
-const INITIAL_VALUES = { title: "", description: "" };
+const INITIAL_VALUES = { title: '', description: '' }
 
 export default () => {
-  const { projectId } = useParams<any>();
-  const projects = useSelector(projectsSelector);
-  const pending = useSelector(isPendingProjectsSelector);
-  const dispatch = useDispatch();
-  const selectedProjectId = projectId || projects[0]?.id;
+  const { projectId } = useParams<any>()
+  const projects = useSelector(projectsSelector)
+  const pending = useSelector(isPendingProjectsSelector)
+  const dispatch = useDispatch()
+  const selectedProjectId = projectId || projects[0]?.id
 
   const handleSave = async () => {
-    if (projectId === "new") {
-      dispatch(createProject(formik.values));
+    if (projectId === 'new') {
+      dispatch(createProject(formik.values))
     } else {
-      dispatch(updateProject({ ...formik.values, id: selectedProjectId }));
+      dispatch(updateProject({ ...formik.values, id: selectedProjectId }))
     }
-  };
+  }
 
   const handleDelete = () => {
-    dispatch(deleteProject(selectedProjectId));
-  };
+    dispatch(deleteProject(selectedProjectId))
+  }
 
   const project = useMemo(() => {
-    return projectId
-      ? projects.find(({ id }) => id === projectId)
-      : projects[0];
-  }, [projectId, projects]);
+    return projectId ? projects.find(({ id }) => id === projectId) : projects[0]
+  }, [projectId, projects])
 
   const formik = useFormik({
     initialValues: project ? { ...project } : INITIAL_VALUES,
     validationSchema: VALIDATION_SCHEMA,
     enableReinitialize: true,
     onSubmit: handleSave,
-  });
+  })
 
-  if (!project && projectId !== "new") {
-    return null;
+  if (!project && projectId !== 'new') {
+    return null
   }
 
   return (
@@ -69,16 +60,11 @@ export default () => {
       onSubmit={formik.handleSubmit}
       onCancel={formik.resetForm}
       isUpdateDisabled={!formik.dirty || pending}
-      isDeleteDisabled={projectId === "new"}
+      isDeleteDisabled={projectId === 'new'}
     >
       <div className={styles.inputsColumn}>
         <FormInput label="Title" name="title" formProps={formik} />
-        <FormInput
-          multiline
-          label="Description"
-          name="description"
-          formProps={formik}
-        />
+        <FormInput multiline label="Description" name="description" formProps={formik} />
         <CustomButton
           className={styles.promoButton}
           href={`/#${ROUTES.PROJECTS}/${projectId}/promotions`}
@@ -88,12 +74,12 @@ export default () => {
 
         <CustomButton
           href={`/#${ROUTES.PROJECTS}/${selectedProjectId}/surveys/${
-            project?.surveyId || "new"
+            project?.surveyId || 'new'
           }/content`}
         >
           {!!project?.surveyId ? `Edit Survey` : `Create Survey`}
         </CustomButton>
       </div>
     </Form>
-  );
-};
+  )
+}

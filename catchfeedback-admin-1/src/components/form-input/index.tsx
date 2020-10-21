@@ -1,21 +1,21 @@
-import React, { ChangeEvent } from "react";
-import { TextField, TextFieldProps } from "@material-ui/core";
-import { FormikErrors } from "formik";
+import React, { ChangeEvent } from 'react'
+import { TextField, TextFieldProps } from '@material-ui/core'
+import { FormikErrors } from 'formik'
 
-import styles from "./styles.module.scss";
+import styles from './styles.module.scss'
 
 export type FormProps = {
-  values?: Record<string, any>;
-  errors: FormikErrors<Record<string, any>>;
-  submitCount?: number;
-  handleChange?: (event: ChangeEvent) => void;
-};
+  values?: Record<string, any>
+  errors: FormikErrors<Record<string, any>>
+  submitCount?: number
+  handleChange?: (event: ChangeEvent) => void
+}
 
 export type Props = TextFieldProps & {
-  name: string;
-  label: string;
-  formProps: FormProps;
-};
+  name: string
+  label: string
+  formProps: FormProps
+}
 
 export default ({
   name,
@@ -27,7 +27,7 @@ export default ({
     <TextField
       name={name}
       label={label}
-      value={(formProps.values && formProps.values[name]) || ""}
+      value={(formProps.values && formProps.values[name]) || ''}
       FormHelperTextProps={{
         className: styles.error,
       }}
@@ -38,4 +38,4 @@ export default ({
       {...textFieldProps}
     />
   </div>
-);
+)
