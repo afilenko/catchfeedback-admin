@@ -4,10 +4,12 @@ import { FormikErrors } from 'formik'
 import classNames from 'classnames'
 import get from 'lodash.get'
 
+import { Survey } from 'typings/entities'
+
 import styles from './styles.module.scss'
 
 export type FormProps = {
-  values?: Record<string, any>
+  values: Survey
   errors: FormikErrors<Record<string, any>>
   submitCount?: number
   handleChange?: (event: ChangeEvent) => void
@@ -15,26 +17,29 @@ export type FormProps = {
 
 export type Props = TextFieldProps & {
   name: string
+  locale: string
   label?: string
   className?: string
   formProps: FormProps
 }
 
-export const FormInput = ({
+export const SurveyFormInput = ({
   name,
   label,
   className,
-  formProps = { errors: {}, values: {} },
+  formProps = { errors: {}, values: {} as Survey },
+  locale,
   ...textFieldProps
 }: Props) => {
-  const error = get(formProps.errors, name)
+  const formFieldKey = `content.${locale}.${name}`
+  const error = get(formProps.errors, formFieldKey)
 
   return (
     <div className={classNames(styles.inputWrapper, className)}>
       <TextField
-        name={name}
+        name={formFieldKey}
         label={label}
-        value={get(formProps.values, name, '')}
+        value={get(formProps.values, formFieldKey, '')}
         FormHelperTextProps={{
           className: styles.error,
         }}
@@ -47,5 +52,4 @@ export const FormInput = ({
     </div>
   )
 }
-
-export default FormInput
+export default SurveyFormInput

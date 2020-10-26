@@ -3,6 +3,7 @@ import { LinearProgress } from '@material-ui/core'
 import classNames from 'classnames'
 
 import { firebaseStorage } from 'helpers/firebase'
+import FormLabel from 'components/form-label'
 
 import styles from './styles.module.scss'
 
@@ -18,7 +19,7 @@ type Props = {
   className?: string
 }
 
-export default ({
+export const ImageUpload = ({
   label,
   image,
   imagePath,
@@ -26,17 +27,20 @@ export default ({
   onComplete,
   width,
   height,
-  backgroundSize = 'cover',
+  backgroundSize = 'contain',
   className,
 }: Props) => {
   const [progress, setProgress] = useState(0)
 
   const handleImageUpload = (event: any) => {
     const imageFile = event.target.files[0]
-    console.log('>>>>', { imageFile })
+
+    if (!imageFile) {
+      return null
+    }
+
     const fileName = imageFile.name
     const fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1)
-    console.log('>>>> fileExtension', fileExtension)
 
     const newImage = new File([imageFile], imageName)
     const imageFullPath = `${imagePath}/${imageName}.${fileExtension}`
@@ -73,7 +77,7 @@ export default ({
 
   return (
     <div className={classNames(styles.container, className)}>
-      <div className={styles.label}>{label}</div>
+      <FormLabel>{label}</FormLabel>
       <div
         className={classNames(styles.imagePreviewWparrer, {
           [styles.hasImage]: !!image,
@@ -97,3 +101,5 @@ export default ({
     </div>
   )
 }
+
+export default ImageUpload

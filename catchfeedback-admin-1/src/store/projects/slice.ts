@@ -16,7 +16,7 @@ type ProjectsState = {
 }
 
 type NewProjectResponse = {
-  payload: string
+  payload: Project
   meta: { arg: Project }
 }
 
@@ -92,25 +92,21 @@ const projects = createSlice({
     builder.addCase(updateProject.rejected, errorReducer)
 
     // create
-    builder.addCase(
-      createProject.fulfilled,
-      (state, { payload: projectId, meta: { arg } }: NewProjectResponse) => {
-        state.pending = false
-        state.entities.splice(0, 0, { ...arg, id: projectId })
-        window.location.hash = `projects/${projectId}`
-      },
-    )
+    builder.addCase(createProject.fulfilled, (state, { payload: project }: NewProjectResponse) => {
+      state.pending = false
+      state.entities.splice(0, 0, project)
+      window.location.hash = `projects/${project.id}`
+    })
     builder.addCase(createProject.pending, pendingReducer)
     builder.addCase(createProject.rejected, errorReducer)
 
     // delete
     builder.addCase(
       deleteProject.fulfilled,
-      (state, { meta: { arg: projectId } }: { meta: { arg: string } }) => {
+      (state, { meta: { arg: project } }: { meta: { arg: Project } }) => {
         state.pending = false
         const projectIds = state.entities.map(({ id }) => id)
-        const removedProjectIndex = projectIds.indexOf(projectId)
-        console.log({ removedProjectIndex })
+        const removedProjectIndex = projectIds.indexOf(project.id)
 
         state.entities.splice(removedProjectIndex, 1)
         window.location.hash = 'projects'

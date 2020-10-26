@@ -1,8 +1,8 @@
 .surveyPageLayout {
+  position: relative;
   display: grid;
   height: 100%;
   grid-template-columns: 500px 1fr;
-  overflow-x: hidden;
 }
 
 .container {
@@ -13,4 +13,37 @@
 .inputsColumn {
   width: 320px;
   padding-left: 5px;
+
+  .grades {
+    justify-content: space-between;
+  }
+
+  .grade {
+    margin: 0;
+  }
+
+  .gradeText {
+    margin-top: 16px;
+  }
+}
+
+.iconPreview {
+  display: flex;
+}
+
+.iconUpload {
+  margin-right: 20px;
+}
+
+.emojiUploadLabel {
+  margin-top: 30px;
+}
+
+.themesSection {
+  margin-left: 5px;
+  margin-bottom: 20px;
+
+  .themeSelector {
+    margin-left: 6px;
+  }
 }

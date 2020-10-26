@@ -1,17 +1,56 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { Popover } from '@material-ui/core'
 // @ts-ignore
 import { ChromePicker } from 'react-color'
 
-type Props = { defaultColor?: string; onChange: (color: string) => void }
+import styles from './styles.module.scss'
 
-export default ({ defaultColor, onChange }: Props) => {
+type Props = { defaultColor?: string; onChange: (color: string) => void; label?: string }
+
+export const ColorPicker = ({
+  defaultColor = '#ffffff',
+  onChange,
+  label = 'Select color',
+}: Props) => {
+  const pickerAnchor = useRef(null)
   const [color, setColor] = useState(defaultColor)
+  const [isOpen, setIsOpen] = useState(false)
+
+  const handleColorChange = (color: string) => {
+    setColor(color)
+    onChange(color)
+  }
+
+  useEffect(() => {
+    setColor(defaultColor)
+  }, [defaultColor])
 
   return (
-    <ChromePicker
-      color={color}
-      onChange={({ hex }: { hex: string }) => onChange(hex)}
-      disableAlpha={true}
-    />
+    <div className={styles.container}>
+      <span
+        ref={pickerAnchor}
+        onClick={() => setIsOpen(true)}
+        style={{ backgroundColor: color }}
+        className={styles.colorIndicator}
+      />
+      {label}
+      <Popover
+        anchorEl={pickerAnchor.current}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+      >
+        <ChromePicker
+          color={color}
+          onChange={({ hex }: { hex: string }) => handleColorChange(hex)}
+          disableAlpha={true}
+        />
+      </Popover>
+    </div>
   )
 }
+
+export default ColorPicker

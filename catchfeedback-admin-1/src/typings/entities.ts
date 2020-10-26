@@ -29,11 +29,30 @@ export type Promotion = ProjectSubEntity & {
   shareImage?: string
 }
 
+export type SurveyDesign = {
+  theme: string
+  headerBackgroundImage?: string
+  headerBackgroundColor?: string
+  headerTextColor?: string
+  contentBackgroundColor?: string
+  contentTextColor?: string
+  controlsBackgroundColor?: string
+  controlsTextColor?: string
+  inputsPlaceholderColor?: string
+  gradeEmoji?: string[]
+  gradeEmojiSelected?: string[]
+  evaluationMark?: string
+  evaluationMarkSelected?: string
+  evaluationSectionBackgroundColor?: string
+  evaluationSectionTextColor?: string
+  shareAudioIcon?: string
+  sharePhotoIcon?: string
+}
+
 export type Survey = ProjectSubEntity & {
   logo?: string
   title?: string
   subTitle?: string
-  description?: string
   surveyTopic?: string
   responseTextGrade1?: string
   responseTextGrade2?: string
@@ -46,12 +65,10 @@ export type Survey = ProjectSubEntity & {
   evaluationTopics?: string[]
   sharingQuestions?: string[]
   contactSectionTitles?: string[]
-  gradeEmoji: string[]
-  gradeEmojiSelected: string[]
-  evaluationMark?: string
-  evaluationMarkSelected?: string
   feedbackInputLabel?: string
   emailInputLabel?: string
   phoneInputLabel?: string
-  design?: Record<string, any>
+  content?: any
+  // content: Record<string, any>
+  design?: SurveyDesign
 }

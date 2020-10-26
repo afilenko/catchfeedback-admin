@@ -1,7 +1,12 @@
 import React from 'react'
+import classNames from 'classnames'
 
 import styles from './styles.module.scss'
 
-type Props = { children: React.ReactNode }
+type Props = { children?: React.ReactNode; className?: string }
 
-export default ({ children }: Props) => <div className={styles.formLabel}>{children}</div>
+export const FormLabel = ({ children, className }: Props) => (
+  <div className={classNames(styles.formLabel, className)}>{children}</div>
+)
+
+export default FormLabel

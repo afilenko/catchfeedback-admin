@@ -14,7 +14,7 @@ type UserEntity = {
   role: string
 }
 
-export default () => {
+export const AuthPage = () => {
   const dispatch = useDispatch()
   const currentUser = useSelector(authUserSelector)
   const signOut = useCallback(() => {
@@ -72,3 +72,5 @@ export default () => {
 
   return <RootPage currentUser={currentUser} />
 }
+
+export default AuthPage

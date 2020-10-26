@@ -25,22 +25,25 @@ export default () => {
   const pending = useSelector(isPendingProjectsSelector)
   const dispatch = useDispatch()
   const selectedProjectId = projectId || projects[0]?.id
+  const isCreateMode = projectId === 'new'
 
   const handleSave = async () => {
-    if (projectId === 'new') {
+    if (isCreateMode) {
       dispatch(createProject(formik.values))
     } else {
       dispatch(updateProject({ ...formik.values, id: selectedProjectId }))
     }
   }
 
-  const handleDelete = () => {
-    dispatch(deleteProject(selectedProjectId))
-  }
-
   const project = useMemo(() => {
     return projectId ? projects.find(({ id }) => id === projectId) : projects[0]
   }, [projectId, projects])
+
+  const handleDelete = () => {
+    if (project) {
+      dispatch(deleteProject(project))
+    }
+  }
 
   const formik = useFormik({
     initialValues: project ? { ...project } : INITIAL_VALUES,
@@ -49,9 +52,9 @@ export default () => {
     onSubmit: handleSave,
   })
 
-  if (!project && projectId !== 'new') {
-    return null
-  }
+  // if (!project && !isCreateMode) {
+  //   return null
+  // }
 
   return (
     <Form
@@ -72,13 +75,13 @@ export default () => {
           Promotions
         </CustomButton>
 
-        <CustomButton
-          href={`/#${ROUTES.PROJECTS}/${selectedProjectId}/surveys/${
-            project?.surveyId || 'new'
-          }/content`}
-        >
-          {!!project?.surveyId ? `Edit Survey` : `Create Survey`}
-        </CustomButton>
+        {!isCreateMode && (
+          <CustomButton
+            href={`/#${ROUTES.PROJECTS}/${selectedProjectId}/surveys/${project?.surveyId}/content`}
+          >
+            Edit Survey
+          </CustomButton>
+        )}
       </div>
     </Form>
   )

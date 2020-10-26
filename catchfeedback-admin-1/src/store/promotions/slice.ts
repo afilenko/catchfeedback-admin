@@ -39,8 +39,6 @@ const promotions = createSlice({
       state.error = null
     }
     const errorReducer = (state: PromotionsState, action: any) => {
-      console.log(action)
-
       state.pending = false
       // TODO: add specific details from the args/payload if needed
       state.error = 'Something went wrong'
@@ -106,7 +104,6 @@ const promotions = createSlice({
         state.pending = false
         const promotionIds = state.entities.map(({ id }) => id)
         const removedPromotionIndex = promotionIds.indexOf(promotionId)
-        console.log({ removedPromotionIndex })
 
         state.entities.splice(removedPromotionIndex, 1)
         window.location.hash = `${ROUTES.PROJECTS}/${projectId}${ROUTES.PROMOTIONS}`

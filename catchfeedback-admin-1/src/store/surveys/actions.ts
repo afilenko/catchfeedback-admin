@@ -1,8 +1,8 @@
-import { createAsyncThunk } from '@reduxjs/toolkit'
+import { createAsyncThunk, createAction } from '@reduxjs/toolkit'
 import * as firebase from 'firebase/app'
+import { THEME_NAMES } from 'helpers/constants'
 
 import { firebaseDB } from 'helpers/firebase'
-import { ProjectSubEntity } from 'typings/entities'
 
 const fetchSurveyAction = (projectId: string) => {
   return firebaseDB
@@ -23,9 +23,21 @@ const fetchSurveyAction = (projectId: string) => {
     })
 }
 
-export const fetchSurvey = createAsyncThunk('fetchSurvey', fetchSurveyAction)
+export const fetchSurvey = createAsyncThunk('surveys/fetchSurvey', fetchSurveyAction)
 
-const updateSurveyAction = (survey: any) => {
+const updateSurveyAction = async (survey: any) => {
+  if (survey.design?.theme === THEME_NAMES.CUSTOM) {
+    const customThemeDocRef = firebaseDB.collection('surveyThemes').doc(survey.id)
+    const customThemeDoc = await customThemeDocRef.get()
+
+    if (!customThemeDoc.exists) {
+      customThemeDocRef.set(survey.design)
+      // customThemeDocRef.set({...survey.design, theme: 'custom'})
+    } else {
+      customThemeDocRef.update(survey.design)
+    }
+  }
+
   return firebaseDB
     .collection('surveys')
     .doc(survey.id)
@@ -35,39 +47,8 @@ const updateSurveyAction = (survey: any) => {
     })
 }
 
-export const updateSurvey = createAsyncThunk('updateSurvey', updateSurveyAction)
+export const updateSurvey = createAsyncThunk('surveys/updateSurvey', updateSurveyAction)
 
-const createSurveyAction = (survey: any) => {
-  const timestamp = firebase.firestore.FieldValue.serverTimestamp()
-
-  return firebaseDB
-    .collection('surveys')
-    .add({
-      ...survey,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-    })
-    .then((docRef) => {
-      // TODO: use transaction
-      firebaseDB
-        .collection('projects')
-        .doc(survey.projectId)
-        .update({
-          surveyId: docRef.id,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        })
-        .then(() => console.log('success'))
-        .catch((e) => {
-          console.log(e)
-        })
-
-      return docRef.id
-    })
-}
-
-export const createSurvey = createAsyncThunk('createSurvey', createSurveyAction)
-
-const deleteSurveyAction = ({ id }: ProjectSubEntity) =>
-  firebaseDB.collection('surveys').doc(id).delete()
-
-export const deleteSurvey = createAsyncThunk('deleteSurvey', deleteSurveyAction)
+export const setSurveyLocale = createAction('surveys/setSurveyLocale', (locale: string) => ({
+  payload: locale,
+}))

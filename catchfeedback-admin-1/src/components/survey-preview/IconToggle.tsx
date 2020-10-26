@@ -12,16 +12,23 @@ type Props = {
   onClick?: () => void
 }
 
-export default ({ width, height, normalStateURL, selectedStateURL, selected, onClick }: Props) => {
-  return (
-    <div
-      className={styles.container}
-      style={{
-        width: `${width}px`,
-        height: `${height}px`,
-      }}
-      onClick={onClick}
-    >
+export const IconToggle = ({
+  width,
+  height,
+  normalStateURL,
+  selectedStateURL,
+  selected,
+  onClick,
+}: Props) => (
+  <div
+    className={styles.container}
+    style={{
+      width: `${width}px`,
+      height: `${height}px`,
+    }}
+    onClick={onClick}
+  >
+    {normalStateURL ? (
       <img
         key={normalStateURL}
         src={normalStateURL}
@@ -29,6 +36,8 @@ export default ({ width, height, normalStateURL, selectedStateURL, selected, onC
           visibility: !selected ? 'visible' : 'hidden',
         }}
       />
+    ) : null}
+    {selectedStateURL ? (
       <img
         key={selectedStateURL}
         src={selectedStateURL}
@@ -36,6 +45,8 @@ export default ({ width, height, normalStateURL, selectedStateURL, selected, onC
           visibility: selected ? 'visible' : 'hidden',
         }}
       />
-    </div>
-  )
-}
+    ) : null}
+  </div>
+)
+
+export default IconToggle

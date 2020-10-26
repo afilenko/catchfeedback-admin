@@ -8,7 +8,7 @@ type Props = ButtonProps & {
   buttonColor?: 'red' | 'green'
 }
 
-export default ({ children, className, buttonColor, type, ...props }: Props) => (
+export const CustomButton = ({ children, className, buttonColor, type, ...props }: Props) => (
   <Button
     {...props}
     type={type}
@@ -24,3 +24,5 @@ export default ({ children, className, buttonColor, type, ...props }: Props) => 
     {children}
   </Button>
 )
+
+export default CustomButton

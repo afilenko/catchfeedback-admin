@@ -11,14 +11,14 @@ type Props = {
   additionalControls?: React.ReactNode
   title: React.ReactNode | string
   onSubmit: () => void
-  onDelete: () => void
+  onDelete?: () => void
   onCancel: () => void
   isUpdateDisabled?: boolean
   isDeleteDisabled?: boolean
   className?: string
 }
 
-export default ({
+export const Form = ({
   children,
   className,
   title,
@@ -34,7 +34,7 @@ export default ({
   const openDeleteDialog = () => setIsDeleteDialogOpen(true)
   const handleConfirmDeleteDialog = () => {
     closeDeleteDialog()
-    onDelete()
+    onDelete && onDelete()
   }
 
   return (
@@ -43,9 +43,11 @@ export default ({
         <span className={styles.title}>{title}</span>
         <div className={styles.formButtons}>
           {additionalControls}
-          <CustomButton disabled={isDeleteDisabled} onClick={openDeleteDialog} buttonColor="red">
-            Delete
-          </CustomButton>
+          {onDelete ? (
+            <CustomButton disabled={isDeleteDisabled} onClick={openDeleteDialog} buttonColor="red">
+              Delete
+            </CustomButton>
+          ) : null}
           <CustomButton disabled={isUpdateDisabled} onClick={onCancel}>
             Cancel
           </CustomButton>
@@ -68,3 +70,5 @@ export default ({
     </form>
   )
 }
+
+export default Form

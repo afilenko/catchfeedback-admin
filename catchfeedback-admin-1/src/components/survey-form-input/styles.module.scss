@@ -1,0 +1,9 @@
+.inputWrapper {
+  margin-bottom: 30px;
+
+  .error {
+    position: absolute;
+    bottom: 0;
+    transform: translateY(100%);
+  }
+}

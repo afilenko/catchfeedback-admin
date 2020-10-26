@@ -2,7 +2,7 @@ import React, { useMemo, useEffect, useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useFormik } from 'formik'
-import { object, string } from 'yup'
+import get from 'lodash.get'
 import {
   FormControlLabel,
   Radio,
@@ -11,39 +11,47 @@ import {
   AccordionSummary,
   AccordionDetails,
   TextField,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Checkbox,
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 
-import { surveysSelector, isPendingSurveysSelector } from 'store/surveys/selectors'
-import { fetchSurvey, createSurvey, updateSurvey, deleteSurvey } from 'store/surveys/actions'
+import {
+  surveysSelector,
+  isPendingSurveysSelector,
+  surveyLocaleSelector,
+} from 'store/surveys/selectors'
+import { fetchSurvey, updateSurvey, setSurveyLocale } from 'store/surveys/actions'
 import SubEntityTitle from 'components/sub-entity-title'
 import FormInput from 'components/form-input'
 import ImageUpload from 'components/image-upload'
 import CustomButton from 'components/custom-button'
 import Form from 'components/form'
+import FormLabel from 'components/form-label'
 import useProject from 'hooks/useProject'
 import EvaluationTopic from './EvaluationTopic'
 import SurveyPreview from 'components/survey-preview'
+import { APP_LOCALES, GRADES } from 'helpers/constants'
+import { getContentValue } from 'helpers/utils'
+import ControlsSection from 'components/consrols-section'
 
 import styles from './styles.module.scss'
 
-const VALIDATION_SCHEMA = object({
-  title: string().required('This field is required'),
-})
+// NOTE: let's make title optional for now.
+// Also let'sleave this commented out code for future reference.
+// const VALIDATION_SCHEMA = object({
+//   title: string().required('This field is required'),
+// })
 
-const GRADES = [0, 1, 2, 3, 4]
-
-const INITIAL_VALUES = {
+const DEFAULT_CONTENT_VALUES = {
   title: '',
-  description: '',
   evaluationTopics: [],
   sharingQuestions: GRADES.map(() => ''),
   contactSectionTitles: GRADES.map(() => ''),
-  gradeEmoji: GRADES.map(() => ''),
-  gradeEmojiSelected: GRADES.map(() => ''),
   contactSectionTitle: '',
-  evaluationMark: '',
-  evaluationMarkSelected: '',
 }
 
 export default () => {
@@ -51,24 +59,16 @@ export default () => {
   const { projectId, surveyId } = useParams<any>()
   const surveys = useSelector(surveysSelector)
   const pending = useSelector(isPendingSurveysSelector)
+  const surveyLocale = useSelector(surveyLocaleSelector)
   const project = useProject()
   const [selectedGrade, setSelectedGrade] = useState(GRADES.length - 1)
-  const isCreateMode = surveyId === 'new'
 
   useEffect(() => {
     dispatch(fetchSurvey(projectId))
   }, [dispatch, projectId])
 
   const handleSave = async () => {
-    if (isCreateMode) {
-      dispatch(createSurvey({ ...formik.values, projectId }))
-    } else {
-      dispatch(updateSurvey({ ...formik.values, id: surveyId }))
-    }
-  }
-
-  const handleDelete = () => {
-    dispatch(deleteSurvey({ id: surveyId, projectId }))
+    dispatch(updateSurvey({ ...formik.values, id: surveyId }))
   }
 
   const survey = useMemo(() => {
@@ -76,114 +76,110 @@ export default () => {
   }, [surveyId, surveys])
 
   const formik = useFormik({
-    initialValues: { ...INITIAL_VALUES, ...survey },
-    validationSchema: VALIDATION_SCHEMA,
+    initialValues: {
+      ...survey,
+      content: {
+        [surveyLocale]: {
+          ...DEFAULT_CONTENT_VALUES,
+          ...get(survey, `content.${surveyLocale}`, {}),
+        },
+      },
+    },
+    // Let'sleave this commented out code for future reference.
+    // validationSchema: object({
+    //   content: object({
+    //     [surveyLocale]: VALIDATION_SCHEMA,
+    //   }),
+    // }),
     enableReinitialize: true,
     onSubmit: handleSave,
   })
 
-  const handleRemoveQuestion = (index: number) => {
-    const updatedQuestions = [...formik.values.evaluationTopics]
+  const handleRemoveEvaluationTopic = (index: number) => {
+    const formFieldKey = `content.${surveyLocale}.evaluationTopics`
+    const updatedValues = [...get(formik.values, formFieldKey, [])]
 
-    updatedQuestions.splice(index, 1)
-    formik.setFieldValue('evaluationTopics', updatedQuestions)
+    updatedValues.splice(index, 1)
+    formik.setFieldValue(formFieldKey, updatedValues)
   }
 
-  const handleChangeQuestionText = (value: string, index: number) => {
-    const updatedQuestions = [...formik.values.evaluationTopics]
+  const handleEvaluationTopicChange = (value: string, index: number) => {
+    const formFieldKey = `content.${surveyLocale}.evaluationTopics`
+    const updatedValues = [...get(formik.values, formFieldKey, [])]
 
-    updatedQuestions.splice(index, 1, value)
-    formik.setFieldValue('evaluationTopics', updatedQuestions)
+    updatedValues.splice(index, 1, value)
+    formik.setFieldValue(formFieldKey, updatedValues)
   }
 
-  const handleChangeQuestionOrder = (direction: number, index: number) => {
-    const updatedQuestions = [...formik.values.evaluationTopics]
+  const handleEvaluationTopicReorder = (direction: number, index: number) => {
+    const formFieldKey = `content.${surveyLocale}.evaluationTopics`
+    const updatedValues = [...get(formik.values, formFieldKey, [])]
     const indexToSwap = index + direction
-    const valueToSwap = updatedQuestions[indexToSwap]
+    const valueToSwap = updatedValues[indexToSwap]
 
-    updatedQuestions.splice(indexToSwap, 1, updatedQuestions[index])
-    updatedQuestions.splice(index, 1, valueToSwap)
-    formik.setFieldValue('evaluationTopics', updatedQuestions)
-
-    console.log({ direction, index, indexToInsert: indexToSwap })
+    updatedValues.splice(indexToSwap, 1, updatedValues[index])
+    updatedValues.splice(index, 1, valueToSwap)
+    formik.setFieldValue(formFieldKey, updatedValues)
   }
 
   const handleAddQuestion = () => {
-    formik.setFieldValue('evaluationTopics', [...formik.values.evaluationTopics, ''])
+    const formFieldKey = `content.${surveyLocale}.evaluationTopics`
+    const updatedValues = [...get(formik.values, formFieldKey, [])]
+
+    updatedValues.push('')
+    formik.setFieldValue(formFieldKey, updatedValues)
   }
 
   const handleSharingQuestionChange = useCallback(
     ({ target }: any) => {
-      const updatedQuestions = [...formik.values.sharingQuestions]
+      const formFieldKey = `content.${surveyLocale}.sharingQuestions`
+      const updatedValues = [...get(formik.values, formFieldKey, [])]
 
-      updatedQuestions.splice(selectedGrade, 1, target?.value)
-      formik.setFieldValue('sharingQuestions', updatedQuestions)
+      updatedValues.splice(selectedGrade, 1, target?.value)
+      formik.setFieldValue(formFieldKey, updatedValues)
     },
-    [formik, selectedGrade],
+    [formik, selectedGrade, surveyLocale],
   )
 
   const handleContactSectionTitleChange = useCallback(
     ({ target }: any) => {
-      const updatedContactSectionTitles = [...formik.values.contactSectionTitles]
+      const formFieldKey = `content.${surveyLocale}.contactSectionTitles`
+      const updatedValues = [...get(formik.values, formFieldKey, [])]
 
-      updatedContactSectionTitles.splice(selectedGrade, 1, target?.value)
-      formik.setFieldValue('contactSectionTitles', updatedContactSectionTitles)
+      updatedValues.splice(selectedGrade, 1, target?.value)
+      formik.setFieldValue(formFieldKey, updatedValues)
     },
-    [formik, selectedGrade],
+    [formik, selectedGrade, surveyLocale],
   )
 
-  const handleGradeEmojiUpload = useCallback(
-    (url: string) => {
-      const updatedGradeEmoji = [...formik.values.gradeEmoji]
-
-      updatedGradeEmoji.splice(selectedGrade, 1, url)
-      dispatch(updateSurvey({ gradeEmoji: updatedGradeEmoji, id: surveyId }))
+  const handleIncludedLocalesChange = useCallback(
+    (isIncludedLocale: boolean) => {
+      formik.setFieldValue(`content.${surveyLocale}.included`, isIncludedLocale)
     },
-    [dispatch, formik.values.gradeEmoji, selectedGrade, surveyId],
+    [formik, surveyLocale],
   )
 
-  const handleGradeEmojiSelectedUpload = useCallback(
-    (url: string) => {
-      const updatedGradeEmoji = [...formik.values.gradeEmojiSelected]
+  const getInputName = useCallback((name) => `content.${surveyLocale}.${name}`, [surveyLocale])
 
-      updatedGradeEmoji.splice(selectedGrade, 1, url)
-      dispatch(updateSurvey({ gradeEmojiSelected: updatedGradeEmoji, id: surveyId }))
-    },
-    [dispatch, formik.values.gradeEmojiSelected, selectedGrade, surveyId],
-  )
-
-  const handleEvaluationMarkUpload = useCallback(
-    (url: string) => {
-      dispatch(updateSurvey({ evaluationMark: url, id: surveyId }))
-    },
-    [dispatch, surveyId],
-  )
-
-  const handleEvaluationMarkSelectedUpload = useCallback(
-    (url: string) => {
-      dispatch(updateSurvey({ evaluationMarkSelected: url, id: surveyId }))
-    },
-    [dispatch, surveyId],
+  const evaluationTopics = useMemo(
+    () => getContentValue(formik.values, surveyLocale, 'evaluationTopics', []),
+    [formik.values, surveyLocale],
   )
 
   return (
     <Form
       title={
         <SubEntityTitle
-          title={isCreateMode ? 'New survey' : survey?.title}
+          title={getContentValue(formik.values, surveyLocale, 'title')}
           projectTitle={project?.title}
         />
       }
-      onDelete={handleDelete}
       onSubmit={formik.handleSubmit}
       onCancel={formik.resetForm}
       isUpdateDisabled={!formik.dirty || pending}
-      isDeleteDisabled={isCreateMode}
       className={styles.container}
       additionalControls={
-        !isCreateMode ? (
-          <CustomButton href={`/#/projects/${projectId}`}>Go to Project</CustomButton>
-        ) : null
+        <CustomButton href={`/#/projects/${projectId}`}>Go to Project</CustomButton>
       }
     >
       <div className={styles.surveyPageLayout}>
@@ -195,139 +191,155 @@ export default () => {
             imageName="logo"
             onComplete={(url) => dispatch(updateSurvey({ logo: url, id: surveyId }))}
           />
-          <FormInput label="Title" name="title" formProps={formik} />
-          <FormInput label="Sub title" name="subTitle" formProps={formik} />
-          <FormInput multiline label="Description" name="description" formProps={formik} />
-          <FormInput label="Ask customers about..." name="surveyTopic" formProps={formik} />
-          <div className={styles.formLabel}>Comment section title</div>
-          <RadioGroup
-            row
-            value={selectedGrade}
-            className={styles.grades}
-            onChange={({ target }) => setSelectedGrade(+target.value)}
-          >
-            {GRADES.map((grade) => (
-              <FormControlLabel
-                key={`grade-${grade}-selector`}
-                value={grade}
-                label={grade + 1}
-                labelPlacement="top"
-                control={<Radio color="default" />}
-                classes={{ labelPlacementTop: styles.grade }}
-              />
-            ))}
-          </RadioGroup>
-          <TextField
-            className={styles.sharingQuestionsInput}
-            label={`Grade ${selectedGrade + 1} response text`}
-            value={formik.values.sharingQuestions[selectedGrade] || ''}
-            onChange={handleSharingQuestionChange}
-            fullWidth={true}
-            multiline
-          />
-          <TextField
-            className={styles.contactSectionTitlesInput}
-            label={`Grade ${selectedGrade + 1} contact section title`}
-            value={formik.values.contactSectionTitles[selectedGrade] || ''}
-            onChange={handleContactSectionTitleChange}
-            fullWidth={true}
-            multiline
-          />
-          <div className={styles.sectionTitle}>{`Grade ${selectedGrade + 1} emoji`}</div>
-          <div className={styles.emojiPreview}>
-            <ImageUpload
-              width={100}
-              height={100}
-              backgroundSize={'45px 45px'}
-              className={styles.emojiUpload}
-              label="normal"
-              image={formik.values.gradeEmoji[selectedGrade]}
-              imagePath={`surveys/${surveyId}/gradeEmoji`}
-              imageName={`grade_${selectedGrade + 1}_emoji`}
-              onComplete={handleGradeEmojiUpload}
+          <ControlsSection className={styles.sectionWrapper}>
+            <FormControl fullWidth={true} className={styles.localeSelect}>
+              <InputLabel>Survey language</InputLabel>
+              <Select
+                value={surveyLocale}
+                onChange={({ target }: any) => dispatch(setSurveyLocale(target.value))}
+              >
+                {APP_LOCALES.map(({ value, label }) => (
+                  <MenuItem key={`locale-option-${value}`} value={value}>
+                    {label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={!!formik.values.content[surveyLocale]?.included}
+                  onChange={(_, value) => handleIncludedLocalesChange(value)}
+                  classes={{
+                    checked: styles.localeCheckboxChecked,
+                  }}
+                />
+              }
+              label="Include in the app"
+              className={styles.localeCheckbox}
             />
-            <ImageUpload
-              width={100}
-              height={100}
-              backgroundSize={'45px 45px'}
-              className={styles.emojiUpload}
-              label="selected"
-              image={formik.values.gradeEmojiSelected[selectedGrade]}
-              imagePath={`surveys/${surveyId}/gradeEmojiSelected`}
-              imageName={`grade_${selectedGrade + 1}_emoji`}
-              onComplete={handleGradeEmojiSelectedUpload}
+          </ControlsSection>
+          <FormInput label="Title" name={getInputName('title')} formProps={formik} />
+          <FormInput label="Sub title" name={getInputName('subTitle')} formProps={formik} />
+          <ControlsSection className={styles.feedbackSectionWrapper}>
+            <FormInput
+              label="Ask customers about..."
+              name={getInputName('surveyTopic')}
+              formProps={formik}
             />
-          </div>
-          <div className={styles.sectionTitle}>Evaluation mark</div>
-          <div className={styles.emojiPreview}>
-            <ImageUpload
-              width={100}
-              height={100}
-              backgroundSize={'41px 40px'}
-              className={styles.evaluationMark}
-              label="normal"
-              image={formik.values.evaluationMark}
-              imagePath={`surveys/${surveyId}/evaluationMark`}
-              imageName="normal"
-              onComplete={handleEvaluationMarkUpload}
-            />
-            <ImageUpload
-              width={100}
-              height={100}
-              backgroundSize={'41px 40px'}
-              className={styles.evaluationMark}
-              label="selected"
-              image={formik.values.evaluationMarkSelected}
-              imagePath={`surveys/${surveyId}/evaluationMark`}
-              imageName="selected"
-              onComplete={handleEvaluationMarkSelectedUpload}
-            />
-          </div>
-          <FormInput label="Feedback input label" name="feedbackInputLabel" formProps={formik} />
-          <FormInput label="Email input label" name="emailInputLabel" formProps={formik} />
-          <FormInput label="Phone input label" name="phoneInputLabel" formProps={formik} />
-          <FormInput label="Evaluation label" name="evaluationLabel" formProps={formik} multiline />
-          <Accordion className={styles.questionsSection} defaultExpanded={true}>
-            <AccordionSummary
-              className={styles.questionsSectionSummary}
-              expandIcon={<ExpandMoreIcon />}
+            <FormLabel>Comment section title</FormLabel>
+            <RadioGroup
+              row
+              value={selectedGrade}
+              className={styles.grades}
+              onChange={({ target }) => setSelectedGrade(+target.value)}
             >
-              Evaluation topics
-            </AccordionSummary>
-            <AccordionDetails className={styles.questionsSectionDetail}>
-              {(formik.values.evaluationTopics as string[]).map(
-                (evaluationTopic: string, i: number) => (
-                  <EvaluationTopic
-                    value={evaluationTopic}
-                    index={i}
-                    onRemove={handleRemoveQuestion}
-                    onChangeText={handleChangeQuestionText}
-                    onChangeOrder={handleChangeQuestionOrder}
-                    isMoveUpDisabled={i === 0}
-                    isMoveDownDisabled={i === formik.values.evaluationTopics?.length - 1}
-                  />
-                ),
+              {GRADES.map((grade) => (
+                <FormControlLabel
+                  key={`grade-${grade}-selector`}
+                  value={grade}
+                  label={grade + 1}
+                  labelPlacement="top"
+                  control={<Radio color="default" />}
+                  classes={{ labelPlacementTop: styles.grade }}
+                />
+              ))}
+            </RadioGroup>
+            <TextField
+              className={styles.sharingQuestionsInput}
+              label={`Grade ${selectedGrade + 1} response text`}
+              value={getContentValue(
+                formik.values,
+                surveyLocale,
+                `sharingQuestions[${selectedGrade}]`,
               )}
-              <div>
-                <CustomButton
-                  onClick={handleAddQuestion}
-                  className={styles.addQuestionButton}
-                  buttonColor="green"
-                >
-                  Add topic
-                </CustomButton>
-              </div>
-            </AccordionDetails>
-          </Accordion>
+              onChange={handleSharingQuestionChange}
+              fullWidth={true}
+              multiline
+            />
+            <TextField
+              className={styles.contactSectionTitlesInput}
+              label={`Grade ${selectedGrade + 1} contact section title`}
+              value={getContentValue(
+                formik.values,
+                surveyLocale,
+                `contactSectionTitles[${selectedGrade}]`,
+              )}
+              onChange={handleContactSectionTitleChange}
+              fullWidth={true}
+              multiline
+            />
+          </ControlsSection>
+          <FormInput
+            label="Feedback input label"
+            name={getInputName('feedbackInputLabel')}
+            formProps={formik}
+          />
+          <FormInput
+            label="Email input label"
+            name={getInputName('emailInputLabel')}
+            formProps={formik}
+          />
+          <FormInput
+            label="Phone input label"
+            name={getInputName('phoneInputLabel')}
+            formProps={formik}
+          />
+          <ControlsSection className={styles.sectionWrapper}>
+            <FormInput
+              label="Evaluation label"
+              name={getInputName('evaluationLabel')}
+              formProps={formik}
+              className={styles.evaluationLabel}
+              multiline
+            />
+            <Accordion className={styles.evaluationTopicsSection} defaultExpanded={true}>
+              <AccordionSummary
+                className={styles.evaluationTopicsSectionSummary}
+                expandIcon={<ExpandMoreIcon />}
+              >
+                Evaluation topics
+              </AccordionSummary>
+              <AccordionDetails className={styles.evaluationTopicsSectionDetail}>
+                {get(formik.values, `content.${surveyLocale}.evaluationTopics`, []).map(
+                  (topicTitle: string, i: number) => (
+                    // eslint-disable-next-line react/jsx-key
+                    <EvaluationTopic
+                      value={topicTitle}
+                      index={i}
+                      onRemove={handleRemoveEvaluationTopic}
+                      onChangeText={handleEvaluationTopicChange}
+                      onChangeOrder={handleEvaluationTopicReorder}
+                      isMoveUpDisabled={i === 0}
+                      isMoveDownDisabled={i === evaluationTopics.length - 1}
+                    />
+                  ),
+                )}
+                <div>
+                  <CustomButton
+                    onClick={handleAddQuestion}
+                    className={styles.addQuestionButton}
+                    buttonColor="green"
+                  >
+                    Add topic
+                  </CustomButton>
+                </div>
+              </AccordionDetails>
+            </Accordion>
+          </ControlsSection>
           <FormInput
             multiline
-            name="recommendationQuestionText"
+            name={getInputName('recommendationQuestionText')}
             label="Recommendation question text"
             formProps={formik}
           />
-          <FormInput label="Submit button text" name="submitButtonText" formProps={formik} />
+          <FormInput
+            label="Submit button text"
+            name={getInputName('submitButtonText')}
+            formProps={formik}
+          />
         </div>
-        <SurveyPreview data={survey} grade={selectedGrade} />
+        <SurveyPreview data={formik.values} grade={selectedGrade} />
       </div>
     </Form>
   )

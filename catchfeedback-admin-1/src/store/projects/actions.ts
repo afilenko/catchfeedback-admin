@@ -23,7 +23,7 @@ const fetchProjectsAction = () => {
     })
 }
 
-export const fetchProjects = createAsyncThunk('fetchProjects', fetchProjectsAction)
+export const fetchProjects = createAsyncThunk('projects/fetchProjects', fetchProjectsAction)
 
 const fetchProjectAction = (projectId: string) =>
   firebaseDB
@@ -38,7 +38,7 @@ const fetchProjectAction = (projectId: string) =>
       return projectDoc.data() as Project
     })
 
-export const fetchProject = createAsyncThunk('fetchProject', fetchProjectAction)
+export const fetchProject = createAsyncThunk('projects/fetchProject', fetchProjectAction)
 
 const updateProjectAction = (project: any) => {
   return firebaseDB
@@ -50,30 +50,42 @@ const updateProjectAction = (project: any) => {
     })
 }
 
-export const updateProject = createAsyncThunk('updateProject', updateProjectAction)
+export const updateProject = createAsyncThunk('projects/updateProject', updateProjectAction)
 
 const createProjectAction = (project: any) => {
   const timestamp = firebase.firestore.FieldValue.serverTimestamp()
   const newProjectDocRef = firebaseDB.collection('projects').doc()
   const newSurveyDocRef = firebaseDB.collection('surveys').doc()
+  const lightThemeDocRef = firebaseDB.collection('surveyThemes').doc('light')
 
   return firebaseDB.runTransaction(async (transaction) => {
-    await transaction.set(newProjectDocRef, {
+    const lightThemeDoc = await transaction.get(lightThemeDocRef)
+    const projectData = {
       ...project,
       createdAt: timestamp,
       updatedAt: timestamp,
       surveyId: newSurveyDocRef.id,
+    }
+
+    await transaction.set(newProjectDocRef, projectData)
+    await transaction.set(newSurveyDocRef, {
+      projectId: newProjectDocRef.id,
+      design: lightThemeDoc.data(),
     })
 
-    await transaction.set(newSurveyDocRef, { projectId: newProjectDocRef.id })
-
-    return Promise.resolve(newProjectDocRef.id)
+    return Promise.resolve({ ...projectData, id: newProjectDocRef.id })
   })
 }
 
-export const createProject = createAsyncThunk('createProject', createProjectAction)
+export const createProject = createAsyncThunk('projects/createProject', createProjectAction)
 
-const deleteProjectAction = (projectId: string) =>
-  firebaseDB.collection('projects').doc(projectId).delete()
+const deleteProjectAction = (project: Project) => {
+  return firebaseDB.runTransaction(async (transaction) => {
+    await transaction.delete(firebaseDB.collection('projects').doc(project.id))
+    await transaction.delete(firebaseDB.collection('surveys').doc(project.surveyId))
 
-export const deleteProject = createAsyncThunk('deleteProject', deleteProjectAction)
+    return project
+  })
+}
+
+export const deleteProject = createAsyncThunk('projects/deleteProject', deleteProjectAction)

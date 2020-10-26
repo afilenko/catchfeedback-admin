@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { ROUTES } from 'helpers/config'
+import { APP_LOCALES } from 'helpers/constants'
 
-import { ProjectSubEntity, Survey } from 'typings/entities'
-import { fetchSurvey, createSurvey, updateSurvey, deleteSurvey } from './actions'
+import { Survey } from 'typings/entities'
+import { fetchSurvey, updateSurvey } from './actions'
 
 export type ArgumentsOfSaveOrderItemAction = {
   orderId: number
@@ -14,6 +14,7 @@ type SurveysState = {
   entities: Survey[]
   error: any
   pending: boolean
+  locale: string
 }
 
 type NewSurveyResponse = {
@@ -21,12 +22,22 @@ type NewSurveyResponse = {
   meta: { arg: Survey }
 }
 
+const INITIAL_STATE: SurveysState = {
+  entities: [],
+  pending: false,
+  error: null,
+  locale: APP_LOCALES[0].value,
+}
+
 const surveys = createSlice({
   name: 'surveys',
-  initialState: { entities: [], error: null, pending: false } as SurveysState,
+  initialState: INITIAL_STATE,
   reducers: {
-    clearSurveysState() {
-      return { entities: [], pending: false, error: null }
+    clearSurveysState(state) {
+      state = { ...INITIAL_STATE }
+    },
+    setSurveyLocale(state, { payload }: { payload: string }) {
+      state.locale = payload
     },
   },
   extraReducers: (builder) => {
@@ -77,40 +88,6 @@ const surveys = createSlice({
     })
     builder.addCase(updateSurvey.pending, pendingReducer)
     builder.addCase(updateSurvey.rejected, errorReducer)
-
-    // create
-    builder.addCase(
-      createSurvey.fulfilled,
-      (state, { payload: surveyId, meta: { arg } }: NewSurveyResponse) => {
-        state.pending = false
-        state.entities.splice(0, 0, { ...arg, id: surveyId })
-        window.location.hash = `projects/${arg.projectId}/surveys/${surveyId}`
-      },
-    )
-    builder.addCase(createSurvey.pending, pendingReducer)
-    builder.addCase(createSurvey.rejected, errorReducer)
-
-    // delete
-    builder.addCase(
-      deleteSurvey.fulfilled,
-      (
-        state,
-        {
-          meta: {
-            arg: { id: surveyId, projectId },
-          },
-        }: { meta: { arg: ProjectSubEntity } },
-      ) => {
-        const surveyIds = state.entities.map(({ id }) => id)
-        const removedSurveyIndex = surveyIds.indexOf(surveyId)
-
-        state.pending = false
-        state.entities.splice(removedSurveyIndex, 1)
-        window.location.hash = `${ROUTES.PROJECTS}/${projectId}/surveys/new`
-      },
-    )
-    builder.addCase(deleteSurvey.pending, pendingReducer)
-    builder.addCase(deleteSurvey.rejected, errorReducer)
   },
 })
 
